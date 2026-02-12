@@ -1,0 +1,164 @@
+Before Cloud:
+On Premise Setup
+
+Cloud computing: 
+delivery of computing resources over the internet on demand with pay as you go pricing
+
+Cloud Service Models:
+1. IaaS - Infra as a Service
+2. PaaS - Platform as a Service
+3. SaaS - Software as a Service
+
+AWS - Amazon Web Services
+Geographical setup:
+1. Regions - a geographical location
+2. Availability Zone (AZ)
+- data centers in the regions 
+- multiple AZ per regions
+3. Edge Locaions
+- used for content delivery
+- used for fast access for users
+----------------------------
+IAM - Identity and Access Management
+Root Account
+- unlimited access
+
+Use for:
+Billing
+Acount setup
+Emergency
+
+-----------------------
+EC2 - Elastic Cloud Compute
+- heart of AWS
+- rent virtual servers
+
+EC2 lifecycle States
+1. Launch
+2. Running
+3. Stopped
+4. Terminated
+
+Pricing models:
+1. On demand - pay per hour
+2. reserved instances
+3. spot instance
+
+Scaling:
+vertical:
+- increase the CPU/RAM
+
+horizontal:
+- add more instances
+- use load balancers
+------------------------------------
+IAM Service
+S3 Service
+VPC service
+-------------------------------
+
+IAM Service
+3 questions:
+1. who are you?
+2. what are you allowed to do?
+3. where are you allowed to do?
+
+4 building blocks
+1. User
+2. User groups
+3. Policy
+4. Role
+
+--------------------------------
+VPC - Virtual Private Cloud
+- a private network inside the AWS 
+- includes all the resources
+Inside a VPC:
+1. EC2 servers
+2. Database servers
+3. Load BAlancers
+4. Route Tables
+5. Subnets
+6. Network ACLs
+7. Gateways
+
+Core Components:
+1. CIDR blocks - the address ranges
+	- defines the IP address range within the VPC
+	ex:
+		172.0.0.0/16 => starts from 172.0.0.0 and has 65,536 IP address
+
+2. Subnets - small part of the VPC
+	- public => React FrontEnd
+	- private => NodeJS BackEnd
+
+	ex:
+		subnetA: 172.0.1.0/24
+
+3. Internet Gateway - allows for communication between Internet and VPC
+
+4. Route Tables - determine access into the Internet Gateway
+
+5. Security Groups
+
+6. NACL - Network Access Control List
+  - works with the subnet
+  - determines what can allowed and denied
+
+7. Public IP and Private IP
+
+----------------------------------------------
+2 ways to connect to a private instance:
+1. Bastion Host - public facing EC2 instance
+Steps:
+	a. create a security group -  bastion-sg
+		- inbound rules => open port 22 for your ip 
+	b. launch EC2 instance => public, Ubuntu, free tier, mern-vpc, public subnet, auto assign enabled, bastion-sg
+	c. optional - attach an elastic IP
+	d. update the inbound rules of backend-ec2 => port 22, change source to bastion-sg 
+2. SSM client
+- management service
+Steps:
+	a. create an IAM role for EC2, attach policy => AmazonSSMManagedInstanceCore
+	b. attached role to private EC2
+	c. check if ssm is installed
+	d. update the private route table
+	e. connect using SSM
+
+
+-----------------------------------
+Steps to connect to the private EC2
+1. Create a Bastion host
+2. Update the sg for the private ec2 to allow port 22 from the bastion
+3. Start the 2 servres
+4. SSH into the bastion server
+	open the command prompt -> set the permissions on the key-pair
+	Permissions are:
+	a. icacls my-ubuntu-server-key.pem /inheritance:r
+	b. icacls my-ubuntu-server-key.pem /grant:r %USERNAME%:R
+
+	Copy the pem file into the bastion server
+	scp -i my-ubuntu-server-key.pem my-ubuntu-server-key.pem ubuntu@Bastion-IP:/home/ubuntu
+
+	Run the ssh command:
+	ssh -i my-ubuntu-server-key.pem ubuntu@Bastion-Public-IP
+5. Inside the bastion:
+a. ls -l => check if the file is available in the server
+b. chmod 400 my-ubuntu-server-key.pem => set the permission to Read for the Admin only
+c. connect to the private ec2 by running the ssh command
+	ssh -i my-ubuntu-server-key.pem ubuntu@private-ec2-private-ip
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
